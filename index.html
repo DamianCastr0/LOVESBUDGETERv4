@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LOVES BUDGETER</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #1c1c1c;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+            color: #FBC6CF;
+        }
+
+        .input-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+        label {
+            width: 150px;
+            text-align: right;
+            padding-right: 10px;
+        }
+
+        input[type="number"], select {
+            padding: 10px;
+            font-size: 18px;
+            border-radius: 8px;
+            border: 2px solid #ccc;
+            width: 60%;
+            max-width: 300px;
+        }
+
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #FBC6CF;
+        }
+
+        button {
+            background-color: #FBC6CF;
+            color: #1c1c1c;
+            font-size: 18px;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #FFB3B3;
+        }
+
+        .highlight {
+            color: #FBC6CF;
+        }
+
+        .result p {
+            margin: 5px 0;
+            font-size: 20px;
+            color: #FBC6CF;
+        }
+
+        .settings {
+            background-color: #333;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+
+        canvas {
+            margin: 20px auto;
+        }
+
+        .bill-container {
+            margin-top: 20px;
+        }
+
+        .bill-entry {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 10px 0;
+        }
+
+        .trash-icon {
+            background-color: transparent;
+            border: none;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .trash-icon img {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Custom Net Pay Style */
+        .net-pay-group {
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #netPayLabel {
+            font-size: 24px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        #netPay {
+            padding: 15px;
+            font-size: 22px;
+            width: 70%;
+            max-width: 400px;
+            border-radius: 8px;
+            border: 2px solid #ccc;
+        }
+
+        #netPay:focus {
+            outline: none;
+            border-color: #FBC6CF;
+        }
+    </style>
+</head>
+<body>
+    <h1>LOVES BUDGETER</h1>
+
+    <!-- Net Pay Section (Custom Styled) -->
+    <div class="net-pay-group">
+        <label id="netPayLabel" for="netPay">Net Pay:</label>
+        <input type="number" id="netPay" placeholder="Enter your net pay">
+    </div>
+
+    <!-- Input Fields for Bills -->
+    <div class="input-group">
+        <label for="gas">Gas (per paycheck):</label>
+        <div class="bill-entry" id="gas-entry">
+            <input type="number" id="gas" placeholder="Enter your gas cost">
+            <button class="trash-icon" onclick="removeBill('gas-entry')">
+                <img src="https://img.icons8.com/ios-glyphs/30/FFFFFF/trash.png" alt="Delete">
+            </button>
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label for="rent">Rent (monthly):</label>
+        <div class="bill-entry" id="rent-entry">
+            <input type="number" id="rent" placeholder="Enter your rent cost">
+            <button class="trash-icon" onclick="removeBill('rent-entry')">
+                <img src="https://img.icons8.com/ios-glyphs/30/FFFFFF/trash.png" alt="Delete">
+            </button>
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label for="subscriptions">Subscriptions (monthly):</label>
+        <div class="bill-entry" id="subscriptions-entry">
+            <input type="number" id="subscriptions" placeholder="Enter your subscription cost">
+            <button class="trash-icon" onclick="removeBill('subscriptions-entry')">
+                <img src="https://img.icons8.com/ios-glyphs/30/FFFFFF/trash.png" alt="Delete">
+            </button>
+        </div>
+    </div>
+
+    <div class="input-group">
+        <label for="braces">Braces Payment (monthly):</label>
+        <div class="bill-entry" id="braces-entry">
+            <input type="number" id="braces" placeholder="Enter your braces payment">
+            <button class="trash-icon" onclick="removeBill('braces-entry')">
+                <img src="https://img.icons8.com/ios-glyphs/30/FFFFFF/trash.png" alt="Delete">
+            </button>
+        </div>
+    </div>
+
+    <!-- Section for Adding Bills -->
+    <div class="bill-container" id="billContainer">
+        <h2>Other Bills</h2>
+        <!-- Dynamic bills will be added here -->
+    </div>
+
+    <button onclick="addBill()">Add Bill</button>
+
+    <!-- Button to Calculate -->
+    <button onclick="calculateBudget()">Calculate</button>
+
+    <!-- Result Section -->
+    <div id="result" class="result"></div>
+
+    <!-- Pie Chart -->
+    <canvas id="budgetChart" width="400" height="400"></canvas>
+
+    <!-- Settings Section for Wants and Savings -->
+    <div class="settings">
+        <h2>Settings</h2>
+        <label for="wantsPercentage">Percentage for Wants:</label>
+        <input type="number" id="wantsPercentage" value="40" min="0" max="100">
+
+        <label for="savingsPercentage">Percentage for Savings:</label>
+        <input type="number" id="savingsPercentage" value="60" min="0" max="100">
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Array to store dynamic bills
+        let bills = ['gas', 'rent', 'subscriptions', 'braces'];
+
+        function addBill() {
+            const billContainer = document.getElementById('billContainer');
+
+            const billEntry = document.createElement('div');
+            billEntry.className = 'input-group bill-entry';
+            const billId = `bill${bills.length}`;
+
+            billEntry.id = billId;
+            billEntry.innerHTML = `
+                <label for="${billId}">New Bill:</label>
+                <input type="number" id="amount${billId}" placeholder="Enter amount for new bill">
+                <select id="type${billId}">
+                    <option value="monthly">Monthly</option>
+                    <option value="perPaycheck">Per Paycheck</option>
+                </select>
+                <button class="trash-icon" onclick="removeBill('${billId}')">
+                    <img src="https://img.icons8.com/ios-glyphs/30/FFFFFF/trash.png" alt="Delete">
+                </button>
+            `;
+
+            billContainer.appendChild(billEntry);
+            bills.push(billId);
+        }
+
+        function removeBill(billId) {
+            const element = document.getElementById(billId);
+            if (element) {
+                element.remove();
+                bills = bills.filter(bill => bill !== billId);
+            }
+        }
+
+        // Function to calculate the budget
+        function calculateBudget() {
+            const netPay = parseFloat(document.getElementById("netPay").value);
+            const gas = parseFloat(document.getElementById("gas").value);
+            const rent = parseFloat(document.getElementById("rent").value) / 2;
+            const subscriptions = parseFloat(document.getElementById("subscriptions").value) / 2;
+            const braces = parseFloat(document.getElementById("braces").value) / 2;
+
+            // Get user-defined percentages for Wants and Savings
+            const wantsPercentage = parseFloat(document.getElementById("wantsPercentage").value) / 100;
+            const savingsPercentage = parseFloat(document.getElementById("savingsPercentage").value) / 100;
+
+            const totalExpenses = gas + rent + subscriptions + braces;
+
+            if (netPay >= totalExpenses) {
+                const extra = netPay - totalExpenses;
+                const wants = Math.floor(extra * wantsPercentage);
+                const savings = extra - wants;
+
+                document.getElementById("result").innerHTML = `
+                    <p class="highlight">Total Expenses: $${totalExpenses.toFixed(2)}</p>
+                    <p class="highlight">Total Wants: $${wants.toFixed(2)} ($${(wants / 2).toFixed(2)} per week)</p>
+                    <p class="highlight">Total Savings: $${savings.toFixed(2)}</p>
+                `;
+
+                // Update the pie chart with the new data
+                const ctx = document.getElementById('budgetChart').getContext('2d');
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Expenses', 'Wants', 'Savings'],
+                        datasets: [{
+                            label: 'Budget Breakdown',
+                            data: [totalExpenses, wants, savings],
+                            backgroundColor: [
+                                '#FF9999', // Light Red for Expenses
+                                '#FBC6CF', // Pink for Wants
+                                '#A3E4D7'  // Light Green for Savings
+                            ],
+                            borderColor: '#1c1c1c',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#FBC6CF' // Set label color to pink
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                document.getElementById("result").innerHTML = `<p class="highlight">Error: Your expenses exceed your income!</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
